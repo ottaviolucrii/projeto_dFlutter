@@ -28,10 +28,10 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Projeto semana 2 - FLutter/Dart'),
     );
   }
 }
@@ -56,32 +56,120 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  bool _shouldFlash = false;
 
-  void _incrementCounter() {
+void _incrementCounter() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      if (_counter < 20) {
+        _counter++;
+        if(_counter == 20){
+          _showWarningDialog();
+        }
+      } else if (_counter < 70) {
+        _counter += 5;
+        _shouldFlash = true;
+        Future.delayed(const Duration(milliseconds: 100), () {
+          setState(() {
+            _shouldFlash = false;
+          });
+        });
+      } else if (_counter == 70) {
+        _showFinalWarning();
+      }
     });
+  }
+
+  void _resetCounter() {
+    setState(() {
+      _counter = 0;
+    });
+  }
+  void _showWarningDialog(){
+    showDialog(
+    context: context,
+    builder: (BuildContext context){
+      return AlertDialog(
+        title: const Text('Cuidado!'),
+        content: const Text('Você chegou aos 20 cliques! O que deseja fazer?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: (){
+              Navigator.of(context).pop();//fecha o dialogo
+              _resetCounter();
+            },
+            child: const Text('Parar'),
+          ),
+          TextButton(
+            onPressed: (){
+              Navigator.of(context).pop();//fecha o dialogo
+              _showConfirmationDialog();
+            },
+            child: const Text('Continuar'),
+          )
+        ],
+      );
+    },//builder
+    );//showDialog
+  }
+
+  void _showConfirmationDialog(){
+    showDialog(
+      context: context,
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: const Text('Confirmar'),
+          content: const Text('Tem certeza? Continue por sua conta e risco!'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: (){
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancelar'),
+            
+            ),
+            TextButton(
+              onPressed: (){
+                Navigator.of(context).pop();
+                
+
+              },
+              child: const Text('Continuar'),
+        ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showFinalWarning(){
+    showDialog(
+      context: context,
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: const Text('Eu avisei 😨'),
+          content: const Text('Você chegou ao número proíbido de 70 cliques, NÂO ABRA SEU GUARDA-ROUPA!'),
+          actions: <Widget> [ 
+            TextButton(
+              onPressed: (){
+                Navigator.of(context).pop();
+                _resetCounter();
+              },
+              child: const Text('Tome cuidado à partir de agora!'),
+            ),
+          ],
+        );
+      },
+
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    
     return Scaffold(
+      backgroundColor: _shouldFlash ? Colors.red : Colors.white,
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
@@ -106,7 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              'Você apertou esse krl de botão esse tanto de vezes, não queira descobrir o que acontece se chegar ao 100!:',
+              'Não queira descobrir o que acontece se apertar 20 vezes!\nEm hipótese alguma chegue nos 70 cliques!',
             ),
             Text(
               '$_counter',
@@ -117,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
-        tooltip: 'Increment',
+        tooltip: 'Fuja!',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
