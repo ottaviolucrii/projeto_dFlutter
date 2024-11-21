@@ -57,17 +57,22 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   bool _shouldFlash = false;
+  bool _canContinueAfterWarning = false;
+  IconData _buttonIcon = Icons.add;
 
 void _incrementCounter() {
     setState(() {
       if (_counter < 20) {
         _counter++;
-        if(_counter == 20){
+      }
+        else if(!_canContinueAfterWarning){
           _showWarningDialog();
         }
-      } else if (_counter < 70) {
+       else if (_counter < 70){
         _counter += 5;
         _shouldFlash = true;
+        _buttonIcon = Icons.warning;
+        
         Future.delayed(const Duration(milliseconds: 100), () {
           setState(() {
             _shouldFlash = false;
@@ -82,6 +87,8 @@ void _incrementCounter() {
   void _resetCounter() {
     setState(() {
       _counter = 0;
+      _canContinueAfterWarning = false;
+      _buttonIcon = Icons.add;
     });
   }
   void _showWarningDialog(){
@@ -130,8 +137,7 @@ void _incrementCounter() {
             TextButton(
               onPressed: (){
                 Navigator.of(context).pop();
-                
-
+                _canContinueAfterWarning = true;
               },
               child: const Text('Continuar'),
         ),
@@ -205,8 +211,8 @@ void _incrementCounter() {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
-        tooltip: 'Fuja!',
-        child: const Icon(Icons.add),
+        tooltip: 'Cuidado!',
+        child: Icon(_buttonIcon),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
